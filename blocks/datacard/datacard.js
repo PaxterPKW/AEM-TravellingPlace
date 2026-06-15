@@ -99,23 +99,23 @@ function buildCardHtml(data) {
           <ul class="highlights-list">${highlightsHtml}</ul>
         </div>` : ''}
         <div class="action-row">
-          <button class="action-btn love-btn" type="button" aria-pressed="false">
+          <button class="action-btn swipe-btn" type="button" aria-pressed="false" aria-label="Skip">
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
+              <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
             </svg>
-            <span>Love</span>
+            <span>Skip</span>
           </button>
-          <button class="action-btn visited-btn" type="button" aria-pressed="false">
+          <button class="action-btn visited-btn" type="button" aria-pressed="false" aria-label="Visited">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
             </svg>
             <span>Visited</span>
           </button>
-          <button class="action-btn swipe-btn" type="button" aria-pressed="false">
+          <button class="action-btn love-btn" type="button" aria-pressed="false" aria-label="Love">
             <svg viewBox="0 0 24 24" aria-hidden="true">
-              <path d="M13.025 1l-2.847 2.828 6.176 6.176H0v3.992h16.354l-6.176 6.176L13.025 23 24 12z"/>
+              <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
-            <span>Swipe</span>
+            <span>Love</span>
           </button>
         </div>
       </div>
@@ -173,7 +173,8 @@ function snapBack(card) {
 
 function dismissCard(card, direction, onDone) {
   card.style.transition = 'none';
-  card.classList.add(direction === 'right' ? 'fly-right' : 'fly-left');
+  const cls = { right: 'fly-right', left: 'fly-left', up: 'fly-up' };
+  card.classList.add(cls[direction] ?? 'fly-left');
   card.addEventListener('animationend', () => { card.remove(); onDone?.(); }, { once: true });
 }
 
@@ -252,7 +253,7 @@ function attachDrag(card, stack, onDismiss) {
 function initTopCard(card, stack, onDismiss) {
   const placeId = card.dataset.placeId || 'place';
 
-  /* Visited — toggle only */
+  /* Visited — save + fly up */
   const visitedBtn = card.querySelector('.visited-btn');
   if (visitedBtn) {
     const key = `datacard-${placeId}-visited`;
@@ -261,10 +262,10 @@ function initTopCard(card, stack, onDismiss) {
       visitedBtn.setAttribute('aria-pressed', 'true');
     }
     visitedBtn.addEventListener('click', () => {
-      const active = visitedBtn.classList.toggle('active');
-      visitedBtn.setAttribute('aria-pressed', String(active));
-      if (active) localStorage.setItem(key, '1');
-      else localStorage.removeItem(key);
+      localStorage.setItem(key, '1');
+      visitedBtn.classList.add('active');
+      visitedBtn.setAttribute('aria-pressed', 'true');
+      dismissCard(card, 'up', () => onDismiss());
     });
   }
 

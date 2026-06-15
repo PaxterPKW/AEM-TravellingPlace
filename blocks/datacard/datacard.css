@@ -356,6 +356,13 @@
   }
 }
 
+@keyframes datacard-fly-up {
+  to {
+    transform: translateY(-120%) scale(0.8);
+    opacity: 0;
+  }
+}
+
 .datacard .place-card.fly-right {
   animation: datacard-fly-right 0.45s ease-in forwards;
   pointer-events: none;
@@ -364,6 +371,12 @@
 
 .datacard .place-card.fly-left {
   animation: datacard-fly-left 0.45s ease-in forwards;
+  pointer-events: none;
+  z-index: 10 !important;
+}
+
+.datacard .place-card.fly-up {
+  animation: datacard-fly-up 0.4s ease-in forwards;
   pointer-events: none;
   z-index: 10 !important;
 }
