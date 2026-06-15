@@ -8,17 +8,56 @@
   color: var(--datacard-accent);
 }
 
+/* ── Stack wrapper ── */
+.datacard .datacard-stack {
+  position: relative;
+  max-width: 450px;
+  margin: auto;
+
+  /* height synced by JS to top card height + peek offset */
+}
+
 /* ── Card shell ── */
 .datacard .place-card {
-  width: 100%;
-  max-width: 450px;
-  margin-left: auto;
-  margin-right: auto;
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
   background-color: var(--datacard-surface);
   border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 25px 50px rgb(0 0 0 / 60%);
-  position: relative;
+  transform-origin: center top;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+  will-change: transform;
+}
+
+/* Top card — fully visible, interactive */
+.datacard .datacard-stack .place-card:nth-child(1) {
+  z-index: 3;
+}
+
+/* 2nd card — peeks 12px below, slightly narrower */
+.datacard .datacard-stack .place-card:nth-child(2) {
+  z-index: 2;
+  transform: translateY(12px) scaleX(0.96);
+  opacity: 0.85;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* 3rd card — peeks 24px below, even narrower */
+.datacard .datacard-stack .place-card:nth-child(3) {
+  z-index: 1;
+  transform: translateY(24px) scaleX(0.92);
+  opacity: 0.7;
+  pointer-events: none;
+  user-select: none;
+}
+
+/* Hide any cards beyond 3rd */
+.datacard .datacard-stack .place-card:nth-child(n+4) {
+  display: none;
 }
 
 /* ── Hero image ── */

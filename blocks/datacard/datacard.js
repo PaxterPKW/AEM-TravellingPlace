@@ -9,30 +9,40 @@ function toSlug(str) {
 }
 
 /**
- * Parses authored block rows into a key→Element map.
- * Each row: first column = field name, second column = value element.
+ * Parses authored block rows into an array of card data objects.
+ * Rows with first column text "---" (or empty both columns) act as card separators.
  * @param {Element} block
- * @returns {Object.<string, Element>}
+ * @returns {Array.<Object.<string, Element>>}
  */
-function parseRows(block) {
-  const data = {};
+function parseAllCards(block) {
+  const cards = [];
+  let current = {};
+
   [...block.children].forEach((row) => {
     const [keyCol, valCol] = [...row.children];
-    if (!keyCol || !valCol) return;
-    const key = keyCol.textContent.trim().toLowerCase();
-    if (key) data[key] = valCol;
+    const key = keyCol?.textContent.trim().toLowerCase() || '';
+
+    if (key === '---' || (!key && !valCol?.textContent.trim())) {
+      if (Object.keys(current).length) {
+        cards.push(current);
+        current = {};
+      }
+      return;
+    }
+
+    if (key && valCol) current[key] = valCol;
   });
-  return data;
+
+  if (Object.keys(current).length) cards.push(current);
+  return cards;
 }
 
 /**
- * Builds the hero image markup, preserving <picture> for responsive images.
+ * Builds the hero image HTML, preserving <picture> for responsive images.
  * @param {Element|undefined} imageCol
  */
 function buildHeroHtml(imageCol) {
-  if (!imageCol) {
-    return '<img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800" alt="" loading="lazy" />';
-  }
+  if (!imageCol) return '<img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800" alt="" loading="lazy" />';
   const picture = imageCol.querySelector('picture');
   if (picture) return picture.outerHTML;
   const img = imageCol.querySelector('img');
@@ -73,48 +83,10 @@ function buildHighlightsHtml(highlightsCol) {
 }
 
 /**
- * Attaches localStorage toggle logic to each action button.
- * @param {Element} block
- * @param {string} placeId
+ * Builds the full HTML string for a single place card.
+ * @param {Object.<string, Element>} data
  */
-function attachActionButtons(block, placeId) {
-  block.querySelectorAll('.action-btn[data-action]').forEach((btn) => {
-    const { action } = btn.dataset;
-    const storageKey = `datacard-${placeId}-${action}`;
-
-    if (localStorage.getItem(storageKey) === '1') {
-      btn.classList.add('active');
-      btn.setAttribute('aria-pressed', 'true');
-    }
-
-    btn.addEventListener('click', () => {
-      const isActive = btn.classList.toggle('active');
-      btn.setAttribute('aria-pressed', String(isActive));
-      if (isActive) {
-        localStorage.setItem(storageKey, '1');
-      } else {
-        localStorage.removeItem(storageKey);
-      }
-    });
-  });
-}
-
-/**
- * Loads and decorates the datacard block.
- *
- * Authored block structure (key | value rows):
- *   image      | <picture> or <img>
- *   title      | ชื่อสถานที่
- *   location   | เมือง, ประเทศ
- *   tags       | tag1, tag2, tag3
- *   summary    | <p>ข้อความ...</p>
- *   highlights | <ul><li>...</li></ul>  หรือ item1, item2, item3
- *
- * @param {Element} block The block element
- */
-export default function decorate(block) {
-  const data = parseRows(block);
-
+function buildCardHtml(data) {
   const heroHtml = buildHeroHtml(data.image);
   const title = data.title?.textContent.trim() || 'สถานที่ท่องเที่ยว';
   const location = data.location?.textContent.trim() || '';
@@ -123,8 +95,8 @@ export default function decorate(block) {
   const highlightsHtml = buildHighlightsHtml(data.highlights);
   const placeId = toSlug(title);
 
-  block.innerHTML = `
-    <div class="place-card">
+  return `
+    <div class="place-card" data-place-id="${placeId}">
       <div class="place-img-container">
         ${heroHtml}
         <div class="place-overlay"></div>
@@ -177,8 +149,78 @@ export default function decorate(block) {
         </div>
 
       </div>
-    </div>
-  `;
+    </div>`;
+}
 
-  attachActionButtons(block, placeId);
+/**
+ * Attaches localStorage toggle logic to each action button inside a card.
+ * @param {Element} card
+ */
+function attachActionButtons(card) {
+  const placeId = card.dataset.placeId || 'place';
+  card.querySelectorAll('.action-btn[data-action]').forEach((btn) => {
+    const { action } = btn.dataset;
+    const storageKey = `datacard-${placeId}-${action}`;
+
+    if (localStorage.getItem(storageKey) === '1') {
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+    }
+
+    btn.addEventListener('click', () => {
+      const isActive = btn.classList.toggle('active');
+      btn.setAttribute('aria-pressed', String(isActive));
+      if (isActive) {
+        localStorage.setItem(storageKey, '1');
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    });
+  });
+}
+
+/**
+ * Sets the stack wrapper height to match the top card + peek offset.
+ * @param {Element} stack
+ */
+function syncStackHeight(stack) {
+  const topCard = stack.querySelector('.place-card');
+  if (!topCard) return;
+  stack.style.height = `${topCard.offsetHeight + 32}px`;
+}
+
+/**
+ * Loads and decorates the datacard block.
+ *
+ * Authored block structure — multiple cards separated by a "---" row:
+ *
+ *   image      | <picture> or <img>
+ *   title      | ชื่อสถานที่
+ *   location   | เมือง, ประเทศ
+ *   tags       | tag1, tag2, tag3
+ *   summary    | <p>ข้อความ...</p>
+ *   highlights | <ul><li>...</li></ul>
+ *   ---        | (separator → starts next card)
+ *   image      | ...
+ *   title      | ...
+ *
+ * @param {Element} block The block element
+ */
+export default function decorate(block) {
+  const allCards = parseAllCards(block);
+
+  const stackHtml = allCards.map(buildCardHtml).join('');
+  block.innerHTML = `<div class="datacard-stack">${stackHtml}</div>`;
+
+  const stack = block.querySelector('.datacard-stack');
+
+  block.querySelectorAll('.place-card').forEach((card) => {
+    attachActionButtons(card);
+  });
+
+  syncStackHeight(stack);
+
+  const ro = new ResizeObserver(() => syncStackHeight(stack));
+  const topCard = stack.querySelector('.place-card');
+  if (topCard) ro.observe(topCard);
 }
