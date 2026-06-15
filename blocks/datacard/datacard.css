@@ -32,11 +32,6 @@
   will-change: transform;
 }
 
-/* Top card — fully visible, interactive */
-.datacard .datacard-stack .place-card:nth-child(1) {
-  z-index: 3;
-}
-
 /* 2nd card — peeks 12px below, slightly narrower */
 .datacard .datacard-stack .place-card:nth-child(2) {
   z-index: 2;
@@ -58,6 +53,17 @@
 /* Hide any cards beyond 3rd */
 .datacard .datacard-stack .place-card:nth-child(n+4) {
   display: none;
+}
+
+/* Top card — fully visible, interactive (after stacking rules) */
+.datacard .datacard-stack .place-card:nth-child(1) {
+  z-index: 3;
+  cursor: grab;
+  touch-action: none;
+}
+
+.datacard .datacard-stack .place-card:nth-child(1):active {
+  cursor: grabbing;
 }
 
 /* ── Hero image ── */
@@ -276,4 +282,118 @@
   .datacard .place-img-container {
     height: 360px;
   }
+}
+
+/* ─── Choice overlay ──────────────────── */
+
+.datacard .choice-overlay {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  pointer-events: none;
+  border-radius: 12px;
+  opacity: 0;
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  padding-top: 48px;
+  overflow: hidden;
+}
+
+.datacard .choice-overlay[data-choice="love"] {
+  background: linear-gradient(to right, transparent 30%, rgb(52 211 153 / 25%));
+}
+
+.datacard .choice-overlay[data-choice="skip"] {
+  background: linear-gradient(to left, transparent 30%, rgb(254 65 65 / 25%));
+}
+
+.datacard .choice-label {
+  font-family: var(--heading-font-family);
+  font-size: 30px;
+  font-weight: 800;
+  letter-spacing: 3px;
+  padding: 6px 20px;
+  border-radius: 6px;
+  border-width: 3px;
+  border-style: solid;
+  display: none;
+}
+
+.datacard .choice-love-label {
+  color: #34d399;
+  border-color: #34d399;
+  transform: rotate(-20deg);
+}
+
+.datacard .choice-skip-label {
+  color: #ff6b6b;
+  border-color: #ff6b6b;
+  transform: rotate(20deg);
+}
+
+.datacard .choice-overlay[data-choice="love"] .choice-love-label {
+  display: block;
+}
+
+.datacard .choice-overlay[data-choice="skip"] .choice-skip-label {
+  display: block;
+}
+
+/* ─── Fly-away animations ─────────────── */
+
+@keyframes datacard-fly-right {
+  to {
+    transform: translateX(150%) rotate(30deg);
+    opacity: 0;
+  }
+}
+
+@keyframes datacard-fly-left {
+  to {
+    transform: translateX(-150%) rotate(-30deg);
+    opacity: 0;
+  }
+}
+
+.datacard .place-card.fly-right {
+  animation: datacard-fly-right 0.45s ease-in forwards;
+  pointer-events: none;
+  z-index: 10 !important;
+}
+
+.datacard .place-card.fly-left {
+  animation: datacard-fly-left 0.45s ease-in forwards;
+  pointer-events: none;
+  z-index: 10 !important;
+}
+
+/* ─── Empty state ─────────────────────── */
+
+.datacard .empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 20px;
+  padding: 64px 24px;
+  background-color: var(--datacard-surface);
+  border-radius: 12px;
+  min-height: 240px;
+  max-width: 450px;
+  margin: auto;
+}
+
+.datacard .empty-state svg {
+  width: 52px;
+  height: 52px;
+  fill: var(--datacard-brand-color);
+  opacity: 0.6;
+}
+
+.datacard .empty-state p {
+  font-size: 16px;
+  color: var(--datacard-text-light);
+  text-align: center;
+  margin: 0;
 }
