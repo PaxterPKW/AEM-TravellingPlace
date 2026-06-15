@@ -11,6 +11,9 @@
 /* ── Card shell ── */
 .datacard .place-card {
   width: 100%;
+  max-width: 450px;
+  margin-left: auto;
+  margin-right: auto;
   background-color: var(--datacard-surface);
   border-radius: 12px;
   overflow: hidden;
