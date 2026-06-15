@@ -12,7 +12,7 @@ export default function decorate(block) {
     </svg>
     <div class="movie-card">
       <div class="movie-img-container">
-        <div class="movie-img"></div>
+        <div class="movie-img" style="background-position: center;"></div>
         <div class="movie-overlay"></div>
       </div>
       <div class="movie-content">
@@ -72,19 +72,19 @@ export default function decorate(block) {
           <h5 class="section-title">CAST</h5>
           <div class="cast-list">
             <div class="cast-item">
-              <img src="https://assets.codepen.io/406785/travolta.jpg" class="cast-photo" alt="John Travolta" />
+              <img src="https://assets.codepen.io/406785/travolta.jpg" class="cast-photo" alt="" />
               <span class="cast-name">John Travolta</span>
             </div>
             <div class="cast-item">
-              <img src="https://assets.codepen.io/406785/jackson.jpeg" class="cast-photo" alt="Samuel L. Jackson" />
+              <img src="https://assets.codepen.io/406785/jackson.jpeg" class="cast-photo" alt="" />
               <span class="cast-name">Samuel L. Jackson</span>
             </div>
             <div class="cast-item">
-              <img src="https://assets.codepen.io/406785/thurman.jpg" class="cast-photo" alt="Uma Thurman" />
+              <img src="https://assets.codepen.io/406785/thurman.jpg" class="cast-photo" alt="" />
               <span class="cast-name">Uma Thurman</span>
             </div>
             <div class="cast-item">
-              <img src="https://assets.codepen.io/406785/willis.jpeg" class="cast-photo" alt="Bruce Willis" />
+              <img src="https://assets.codepen.io/406785/willis.jpeg" class="cast-photo" alt="" />
               <span class="cast-name">Bruce Willis</span>
             </div>
           </div>

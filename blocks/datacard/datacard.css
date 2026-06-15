@@ -311,25 +311,6 @@
 
 @media (width >= 768px) {
   .datacard .movie-card {
-    max-width: 650px;
-    display: flex;
-  }
-
-  .datacard .movie-img-container {
-    width: 40%;
-    height: auto;
-  }
-
-  .datacard .movie-content {
-    width: 60%;
-    margin-top: 0;
-  }
-
-  .datacard .movie-overlay {
-    background: linear-gradient(
-      90deg,
-      rgb(30 27 38 / 0%) 0%,
-      var(--datacard-poster-overlay) 100%
-    );
+    max-width: 450px;
   }
 }

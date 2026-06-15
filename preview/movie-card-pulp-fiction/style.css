@@ -339,25 +339,6 @@ a {
 
 @media (min-width: 768px) {
   .movie-card {
-    max-width: 650px;
-    display: flex;
-  }
-
-  .movie-img-container {
-    width: 40%;
-    height: auto;
-  }
-
-  .movie-content {
-    width: 60%;
-    margin-top: 0;
-  }
-
-  .movie-overlay {
-    background: linear-gradient(
-      90deg, 
-      rgba(30,27,38,0) 0%, 
-      var(--poster-overlay) 100%
-    );
+    max-width: 450px;
   }
 }
