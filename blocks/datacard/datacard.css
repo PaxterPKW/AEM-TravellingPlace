@@ -8,111 +8,85 @@
   color: var(--datacard-accent);
 }
 
-.datacard .movie-card {
+/* ── Card shell ── */
+.datacard .place-card {
   width: 100%;
   background-color: var(--datacard-surface);
-  border-radius: 4px;
+  border-radius: 12px;
   overflow: hidden;
   box-shadow: 0 25px 50px rgb(0 0 0 / 60%);
   position: relative;
 }
 
-.datacard .movie-img-container {
-  height: 380px;
+/* ── Hero image ── */
+.datacard .place-img-container {
+  height: 280px;
   position: relative;
   overflow: hidden;
 }
 
-.datacard .movie-img {
+.datacard .place-img {
   height: 100%;
   width: 100%;
-  background: url("https://assets.codepen.io/406785/pulp1.avif") no-repeat;
-  background-position: 37% 23% !important;
+  background: url("https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800") no-repeat center / cover;
 }
 
-.datacard .movie-overlay {
+.datacard .place-overlay {
   position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
+  inset: 0;
   background: linear-gradient(
     180deg,
-    rgb(30 27 38 / 0%) 30%,
-    rgb(30 27 38 / 70%) 60%,
+    rgb(30 27 38 / 0%) 40%,
+    rgb(30 27 38 / 80%) 75%,
     rgb(30 27 38 / 100%) 100%
   );
   z-index: 1;
 }
 
-.datacard .movie-content {
+/* ── Content area ── */
+.datacard .place-content {
   padding: var(--datacard-padding);
   position: relative;
-  margin-top: -120px;
+  margin-top: -80px;
   z-index: 2;
 }
 
+/* ── Title ── */
 .datacard .title-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-start;
   margin-bottom: 6px;
 }
 
-.datacard .movie-title {
+.datacard .place-title {
   font-family: Montserrat, sans-serif;
-  font-size: 24px;
+  font-size: 26px;
   font-weight: 700;
   color: #fff;
-  text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
-  flex: 1;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 40%);
   line-height: 1.2;
   margin: 0;
 }
 
-.datacard .year-badge {
-  font-family: Montserrat, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  color: var(--datacard-text-lighter);
-  margin-left: 8px;
-  opacity: 0.85;
-}
-
-.datacard .rating-badge {
-  background-color: var(--datacard-brand-color);
-  color: white;
-  padding: 2px 8px;
-  border-radius: 4px;
-  font-family: Montserrat, sans-serif;
-  font-size: 12px;
-  font-weight: 600;
-  margin-top: 3px;
-  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
-  letter-spacing: 0.5px;
-}
-
-.datacard .metadata {
+/* ── Location ── */
+.datacard .location {
   display: flex;
   align-items: center;
-  margin: 8px 0 var(--datacard-section-space);
+  gap: 5px;
+  margin-bottom: 12px;
 }
 
-.datacard .duration {
-  font-size: 13px;
-  color: var(--datacard-text-light);
-  margin-right: 16px;
-  display: flex;
-  align-items: center;
-}
-
-.datacard .duration-icon {
+.datacard .location-icon {
   width: 14px;
   height: 14px;
-  fill: var(--datacard-text-light);
-  margin-right: 4px;
+  fill: var(--datacard-brand-color);
+  flex-shrink: 0;
 }
 
+.datacard .location span {
+  font-size: 13px;
+  color: var(--datacard-text-lighter);
+}
+
+/* ── Genre tags ── */
 .datacard .genres {
   display: flex;
   flex-wrap: wrap;
@@ -128,189 +102,126 @@
   font-size: 11px;
   font-weight: 500;
   color: var(--datacard-text-lighter);
-  transition: all 0.2s ease;
-}
-
-.datacard .ratings-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: var(--datacard-section-space);
-  padding-bottom: var(--datacard-section-space);
-  border-bottom: 1px solid rgb(255 255 255 / 10%);
-}
-
-.datacard .star-rating {
-  display: flex;
-  align-items: center;
-}
-
-.datacard .stars {
-  display: flex;
-}
-
-.datacard .star {
-  width: 16px;
-  height: 16px;
-  margin-right: 2px;
-}
-
-.datacard .star-filled {
-  fill: #ffd700;
-}
-
-.datacard .star-half {
-  fill: url("#datacard-half-gradient");
-}
-
-.datacard .star-empty {
-  fill: rgb(255 255 255 / 20%);
-}
-
-.datacard .rating-text {
-  font-size: 13px;
-  font-weight: 600;
-  color: var(--datacard-text-lighter);
-  margin-left: 8px;
-}
-
-.datacard .likes {
-  display: flex;
-  align-items: center;
-  background-color: rgb(255 255 255 / 5%);
-  padding: 5px 10px;
-  border-radius: 20px;
   transition: background-color 0.2s ease;
 }
 
-.datacard .heart-icon {
-  width: 16px;
-  height: 16px;
-  margin-right: 6px;
-  fill: var(--datacard-brand-color);
+.datacard .genre-tag:hover {
+  background-color: rgb(254 65 65 / 20%);
 }
 
-.datacard .likes-count {
-  font-size: 12px;
-  font-weight: 600;
-  color: var(--datacard-text-light);
-}
-
-.datacard .description-section {
-  margin-bottom: var(--datacard-section-space);
-}
-
+/* ── Section title ── */
 .datacard .section-title {
   font-family: Montserrat, sans-serif;
-  font-size: 14px;
-  font-weight: 600;
-  letter-spacing: 1px;
-  margin: 0 0 10px;
-  color: var(--datacard-text-lighter);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 1.5px;
+  margin: 0 0 8px;
+  color: var(--datacard-text-light);
 }
 
-.datacard .movie-description {
+/* ── Summary ── */
+.datacard .description-section {
+  margin-bottom: var(--datacard-section-space);
+  padding-bottom: var(--datacard-section-space);
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
+}
+
+.datacard .place-description {
   font-size: 13px;
-  line-height: 1.6;
+  line-height: 1.65;
   color: var(--datacard-text-light);
-  text-align: justify;
   margin: 0;
 }
 
-.datacard .cast-section {
+/* ── Highlights ── */
+.datacard .highlights-section {
   margin-bottom: var(--datacard-section-space);
+  padding-bottom: var(--datacard-section-space);
+  border-bottom: 1px solid rgb(255 255 255 / 8%);
 }
 
-.datacard .cast-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 15px;
-}
-
-.datacard .cast-item {
+.datacard .highlights-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
   display: flex;
   flex-direction: column;
-  align-items: center;
-  width: 60px;
+  gap: 7px;
 }
 
-.datacard .cast-photo {
-  width: 50px;
-  height: 50px;
-  border-radius: 4px;
-  margin-bottom: 5px;
-  object-fit: cover;
-  box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
-}
-
-.datacard .cast-name {
-  font-size: 10px;
-  text-align: center;
+.datacard .highlights-list li {
+  font-size: 13px;
   color: var(--datacard-text-light);
-  max-width: 100%;
-  white-space: wrap;
+  padding-left: 16px;
+  position: relative;
+  line-height: 1.4;
 }
 
+.datacard .highlights-list li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 6px;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: var(--datacard-brand-color);
+}
+
+/* ── Action buttons ── */
 .datacard .action-row {
   display: grid;
-  grid-template-columns: 1fr repeat(3, auto);
+  grid-template-columns: repeat(3, 1fr);
   gap: 10px;
-  align-items: center;
-  margin-top: 10px;
-}
-
-.datacard .watch-btn {
-  background-color: var(--datacard-brand-color);
-  border: none;
-  border-radius: 4px;
-  padding: 10px 16px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  transition: all 0.3s ease;
-  box-shadow: 0 4px 8px rgb(254 65 65 / 30%);
-}
-
-.datacard .watch-btn:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 12px rgb(254 65 65 / 40%);
-  background-color: #ff5151;
-}
-
-.datacard .watch-btn-text {
-  font-family: Montserrat, sans-serif;
-  font-size: 13px;
-  font-weight: 600;
-  color: white;
-  margin-left: 8px;
+  margin-top: 4px;
 }
 
 .datacard .action-btn {
-  width: 40px;
-  height: 40px;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 5px;
+  padding: 10px 8px;
+  border: none;
+  border-radius: 8px;
   cursor: pointer;
-  background-color: rgb(255 255 255 / 5%);
-  border-radius: 4px;
+  font-family: Montserrat, sans-serif;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   transition: all 0.2s ease;
+  background-color: rgb(255 255 255 / 6%);
+  color: var(--datacard-text-lighter);
+}
+
+.datacard .action-btn svg {
+  width: 18px;
+  height: 18px;
+  fill: currentcolor;
 }
 
 .datacard .action-btn:hover {
-  background-color: rgb(255 255 255 / 10%);
   transform: translateY(-2px);
 }
 
-.datacard .action-icon {
-  width: 18px;
-  height: 18px;
-  fill: var(--datacard-text-lighter);
+.datacard .love-btn:hover {
+  background-color: rgb(254 65 65 / 20%);
+  color: #ff6b6b;
+}
+
+.datacard .visited-btn:hover {
+  background-color: rgb(52 211 153 / 20%);
+  color: #34d399;
+}
+
+.datacard .swipe-btn:hover {
+  background-color: rgb(255 255 255 / 12%);
+  color: #fff;
 }
 
 @media (width >= 768px) {
-  .datacard .movie-card {
+  .datacard .place-card {
     max-width: 450px;
   }
 }
