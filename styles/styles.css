@@ -49,6 +49,16 @@
   --var-heading: normal normal 600 1.5em/1.6em 'Outfit', sans-serif;
   --var-small-heading: normal normal 400 1em/1em 'Outfit', sans-serif;
   --var-para: normal normal 300 1em/1.55em 'Outfit', sans-serif;
+
+  /* datacard */
+  --datacard-brand-color: #fe4141;
+  --datacard-surface: #1e1b26;
+  --datacard-accent: #e7e7e7;
+  --datacard-text-light: #b4b4b4;
+  --datacard-text-lighter: #d7d7d7;
+  --datacard-section-space: 16px;
+  --datacard-padding: 24px;
+  --datacard-poster-overlay: rgb(30 27 38 / 80%);
 }
 
 /* fallback fonts */

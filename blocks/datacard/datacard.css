@@ -1,0 +1,335 @@
+.datacard {
+  font-family: 'Open Sans', sans-serif;
+  color: var(--datacard-accent);
+}
+
+.datacard a {
+  text-decoration: none;
+  color: var(--datacard-accent);
+}
+
+.datacard .movie-card {
+  width: 100%;
+  background-color: var(--datacard-surface);
+  border-radius: 4px;
+  overflow: hidden;
+  box-shadow: 0 25px 50px rgb(0 0 0 / 60%);
+  position: relative;
+}
+
+.datacard .movie-img-container {
+  height: 380px;
+  position: relative;
+  overflow: hidden;
+}
+
+.datacard .movie-img {
+  height: 100%;
+  width: 100%;
+  background: url("https://assets.codepen.io/406785/pulp1.avif") no-repeat;
+  background-position: 37% 23% !important;
+}
+
+.datacard .movie-overlay {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    180deg,
+    rgb(30 27 38 / 0%) 30%,
+    rgb(30 27 38 / 70%) 60%,
+    rgb(30 27 38 / 100%) 100%
+  );
+  z-index: 1;
+}
+
+.datacard .movie-content {
+  padding: var(--datacard-padding);
+  position: relative;
+  margin-top: -120px;
+  z-index: 2;
+}
+
+.datacard .title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 6px;
+}
+
+.datacard .movie-title {
+  font-family: Montserrat, sans-serif;
+  font-size: 24px;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 2px rgb(0 0 0 / 30%);
+  flex: 1;
+  line-height: 1.2;
+  margin: 0;
+}
+
+.datacard .year-badge {
+  font-family: Montserrat, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--datacard-text-lighter);
+  margin-left: 8px;
+  opacity: 0.85;
+}
+
+.datacard .rating-badge {
+  background-color: var(--datacard-brand-color);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 4px;
+  font-family: Montserrat, sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  margin-top: 3px;
+  box-shadow: 0 2px 4px rgb(0 0 0 / 20%);
+  letter-spacing: 0.5px;
+}
+
+.datacard .metadata {
+  display: flex;
+  align-items: center;
+  margin: 8px 0 var(--datacard-section-space);
+}
+
+.datacard .duration {
+  font-size: 13px;
+  color: var(--datacard-text-light);
+  margin-right: 16px;
+  display: flex;
+  align-items: center;
+}
+
+.datacard .duration-icon {
+  width: 14px;
+  height: 14px;
+  fill: var(--datacard-text-light);
+  margin-right: 4px;
+}
+
+.datacard .genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: var(--datacard-section-space);
+}
+
+.datacard .genre-tag {
+  background-color: rgb(254 65 65 / 10%);
+  border: 1px solid rgb(254 65 65 / 30%);
+  padding: 3px 10px;
+  border-radius: 16px;
+  font-size: 11px;
+  font-weight: 500;
+  color: var(--datacard-text-lighter);
+  transition: all 0.2s ease;
+}
+
+.datacard .ratings-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: var(--datacard-section-space);
+  padding-bottom: var(--datacard-section-space);
+  border-bottom: 1px solid rgb(255 255 255 / 10%);
+}
+
+.datacard .star-rating {
+  display: flex;
+  align-items: center;
+}
+
+.datacard .stars {
+  display: flex;
+}
+
+.datacard .star {
+  width: 16px;
+  height: 16px;
+  margin-right: 2px;
+}
+
+.datacard .star-filled {
+  fill: #ffd700;
+}
+
+.datacard .star-half {
+  fill: url("#datacard-half-gradient");
+}
+
+.datacard .star-empty {
+  fill: rgb(255 255 255 / 20%);
+}
+
+.datacard .rating-text {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--datacard-text-lighter);
+  margin-left: 8px;
+}
+
+.datacard .likes {
+  display: flex;
+  align-items: center;
+  background-color: rgb(255 255 255 / 5%);
+  padding: 5px 10px;
+  border-radius: 20px;
+  transition: background-color 0.2s ease;
+}
+
+.datacard .heart-icon {
+  width: 16px;
+  height: 16px;
+  margin-right: 6px;
+  fill: var(--datacard-brand-color);
+}
+
+.datacard .likes-count {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--datacard-text-light);
+}
+
+.datacard .description-section {
+  margin-bottom: var(--datacard-section-space);
+}
+
+.datacard .section-title {
+  font-family: Montserrat, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  margin: 0 0 10px;
+  color: var(--datacard-text-lighter);
+}
+
+.datacard .movie-description {
+  font-size: 13px;
+  line-height: 1.6;
+  color: var(--datacard-text-light);
+  text-align: justify;
+  margin: 0;
+}
+
+.datacard .cast-section {
+  margin-bottom: var(--datacard-section-space);
+}
+
+.datacard .cast-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.datacard .cast-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 60px;
+}
+
+.datacard .cast-photo {
+  width: 50px;
+  height: 50px;
+  border-radius: 4px;
+  margin-bottom: 5px;
+  object-fit: cover;
+  box-shadow: 0 2px 5px rgb(0 0 0 / 20%);
+}
+
+.datacard .cast-name {
+  font-size: 10px;
+  text-align: center;
+  color: var(--datacard-text-light);
+  max-width: 100%;
+  white-space: wrap;
+}
+
+.datacard .action-row {
+  display: grid;
+  grid-template-columns: 1fr repeat(3, auto);
+  gap: 10px;
+  align-items: center;
+  margin-top: 10px;
+}
+
+.datacard .watch-btn {
+  background-color: var(--datacard-brand-color);
+  border: none;
+  border-radius: 4px;
+  padding: 10px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 8px rgb(254 65 65 / 30%);
+}
+
+.datacard .watch-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px rgb(254 65 65 / 40%);
+  background-color: #ff5151;
+}
+
+.datacard .watch-btn-text {
+  font-family: Montserrat, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  color: white;
+  margin-left: 8px;
+}
+
+.datacard .action-btn {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  background-color: rgb(255 255 255 / 5%);
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.datacard .action-btn:hover {
+  background-color: rgb(255 255 255 / 10%);
+  transform: translateY(-2px);
+}
+
+.datacard .action-icon {
+  width: 18px;
+  height: 18px;
+  fill: var(--datacard-text-lighter);
+}
+
+@media (width >= 768px) {
+  .datacard .movie-card {
+    max-width: 650px;
+    display: flex;
+  }
+
+  .datacard .movie-img-container {
+    width: 40%;
+    height: auto;
+  }
+
+  .datacard .movie-content {
+    width: 60%;
+    margin-top: 0;
+  }
+
+  .datacard .movie-overlay {
+    background: linear-gradient(
+      90deg,
+      rgb(30 27 38 / 0%) 0%,
+      var(--datacard-poster-overlay) 100%
+    );
+  }
+}
