@@ -223,8 +223,8 @@
   color: #fff;
 }
 
-@media (width >= 768px) {
-  .datacard .place-card {
-    max-width: 450px;
+@media (width >= 600px) {
+  .datacard .place-img-container {
+    height: 360px;
   }
 }
