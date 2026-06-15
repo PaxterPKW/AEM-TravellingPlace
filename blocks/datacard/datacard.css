@@ -205,17 +205,20 @@
   transform: translateY(-2px);
 }
 
-.datacard .love-btn:hover {
+.datacard .love-btn:hover,
+.datacard .love-btn.active {
   background-color: rgb(254 65 65 / 20%);
   color: #ff6b6b;
 }
 
-.datacard .visited-btn:hover {
+.datacard .visited-btn:hover,
+.datacard .visited-btn.active {
   background-color: rgb(52 211 153 / 20%);
   color: #34d399;
 }
 
-.datacard .swipe-btn:hover {
+.datacard .swipe-btn:hover,
+.datacard .swipe-btn.active {
   background-color: rgb(255 255 255 / 12%);
   color: #fff;
 }

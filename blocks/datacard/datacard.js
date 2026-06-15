@@ -46,19 +46,19 @@ export default function decorate(block) {
         </div>
 
         <div class="action-row">
-          <button class="action-btn love-btn" type="button">
+          <button class="action-btn love-btn" type="button" data-action="love" aria-pressed="false">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
             </svg>
             <span>Love</span>
           </button>
-          <button class="action-btn visited-btn" type="button">
+          <button class="action-btn visited-btn" type="button" data-action="visited" aria-pressed="false">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41L9 16.17z"/>
             </svg>
             <span>Visited</span>
           </button>
-          <button class="action-btn swipe-btn" type="button">
+          <button class="action-btn swipe-btn" type="button" data-action="swipe" aria-pressed="false">
             <svg viewBox="0 0 24 24" aria-hidden="true">
               <path d="M13.025 1l-2.847 2.828 6.176 6.176H0v3.992h16.354l-6.176 6.176L13.025 23 24 12z"/>
             </svg>
@@ -69,4 +69,27 @@ export default function decorate(block) {
       </div>
     </div>
   `;
+
+  const placeId = block.closest('[data-place-id]')?.dataset.placeId
+    || window.location.pathname.replace(/\//g, '-').replace(/^-/, '') || 'place';
+
+  block.querySelectorAll('.action-btn[data-action]').forEach((btn) => {
+    const { action } = btn.dataset;
+    const storageKey = `datacard-${placeId}-${action}`;
+
+    if (localStorage.getItem(storageKey) === '1') {
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+    }
+
+    btn.addEventListener('click', () => {
+      const isActive = btn.classList.toggle('active');
+      btn.setAttribute('aria-pressed', String(isActive));
+      if (isActive) {
+        localStorage.setItem(storageKey, '1');
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    });
+  });
 }
