@@ -1,17 +1,31 @@
-import { createOptimizedPicture } from '../../scripts/aem.js';
+export default function init(el) {
+  const inner = el.querySelector(':scope > div');
+  inner.classList.add('card-inner');
+  const pic = el.querySelector('picture');
+  if (pic) {
+    const picPara = pic.closest('p');
+    if (picPara) {
+      const picDiv = document.createElement('div');
+      picDiv.className = 'card-picture-container';
+      picDiv.append(pic);
+      inner.insertAdjacentElement('afterbegin', picDiv);
+      picPara.remove();
+    }
+  }
+  // Decorate content
+  const con = inner.querySelector(':scope > div:not([class])');
+  if (!con) return;
+  con.classList.add('card-content-container');
 
-export default function decorate(block) {
-  /* change to ul, li */
-  const ul = document.createElement('ul');
-  [...block.children].forEach((row) => {
-    const li = document.createElement('li');
-    while (row.firstElementChild) li.append(row.firstElementChild);
-    [...li.children].forEach((div) => {
-      if (div.children.length === 1 && div.querySelector('picture')) div.className = 'cards-card-image';
-      else div.className = 'cards-card-body';
-    });
-    ul.append(li);
-  });
-  ul.querySelectorAll('picture > img').forEach((img) => img.closest('picture').replaceWith(createOptimizedPicture(img.src, img.alt, false, [{ width: '750' }])));
-  block.replaceChildren(ul);
+  // Decorate CTA
+  const ctaPara = inner.querySelector(':scope > div:last-of-type > p:last-of-type');
+  if (!ctaPara) return;
+  const cta = ctaPara.querySelector('a');
+  if (!cta) return;
+  const hashAware = el.classList.contains('hash-aware');
+  if (hashAware) {
+    cta.href = `${cta.getAttribute('href')}${window.location.hash}`;
+  }
+  ctaPara.classList.add('card-cta-container');
+  inner.append(ctaPara);
 }
