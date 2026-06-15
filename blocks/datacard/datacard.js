@@ -1,49 +1,159 @@
+const PIN_ICON = '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>';
+
 /**
- * loads and decorates the datacard block
+ * Slugifies a string for use as a localStorage key.
+ * @param {string} str
+ */
+function toSlug(str) {
+  return str.toLowerCase().replace(/[^\w\u0E00-\u0E7F]+/g, '-').replace(/^-|-$/g, '') || 'place';
+}
+
+/**
+ * Parses authored block rows into a key→Element map.
+ * Each row: first column = field name, second column = value element.
+ * @param {Element} block
+ * @returns {Object.<string, Element>}
+ */
+function parseRows(block) {
+  const data = {};
+  [...block.children].forEach((row) => {
+    const [keyCol, valCol] = [...row.children];
+    if (!keyCol || !valCol) return;
+    const key = keyCol.textContent.trim().toLowerCase();
+    if (key) data[key] = valCol;
+  });
+  return data;
+}
+
+/**
+ * Builds the hero image markup, preserving <picture> for responsive images.
+ * @param {Element|undefined} imageCol
+ */
+function buildHeroHtml(imageCol) {
+  if (!imageCol) {
+    return '<img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800" alt="" loading="lazy" />';
+  }
+  const picture = imageCol.querySelector('picture');
+  if (picture) return picture.outerHTML;
+  const img = imageCol.querySelector('img');
+  if (img) return img.outerHTML;
+  return '<img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800" alt="" loading="lazy" />';
+}
+
+/**
+ * Builds genre tag chips from a comma-separated string.
+ * @param {Element|undefined} tagsCol
+ */
+function buildTagsHtml(tagsCol) {
+  if (!tagsCol) return '';
+  return tagsCol.textContent
+    .split(',')
+    .map((t) => t.trim())
+    .filter(Boolean)
+    .map((t) => `<span class="genre-tag">${t}</span>`)
+    .join('');
+}
+
+/**
+ * Builds highlight list items from <li>, <p> tags, or comma-separated text.
+ * @param {Element|undefined} highlightsCol
+ */
+function buildHighlightsHtml(highlightsCol) {
+  if (!highlightsCol) return '';
+  const items = [...highlightsCol.querySelectorAll('li, p')]
+    .map((el) => el.textContent.trim())
+    .filter(Boolean);
+  if (items.length) return items.map((h) => `<li>${h}</li>`).join('');
+  return highlightsCol.textContent
+    .split(',')
+    .map((h) => h.trim())
+    .filter(Boolean)
+    .map((h) => `<li>${h}</li>`)
+    .join('');
+}
+
+/**
+ * Attaches localStorage toggle logic to each action button.
+ * @param {Element} block
+ * @param {string} placeId
+ */
+function attachActionButtons(block, placeId) {
+  block.querySelectorAll('.action-btn[data-action]').forEach((btn) => {
+    const { action } = btn.dataset;
+    const storageKey = `datacard-${placeId}-${action}`;
+
+    if (localStorage.getItem(storageKey) === '1') {
+      btn.classList.add('active');
+      btn.setAttribute('aria-pressed', 'true');
+    }
+
+    btn.addEventListener('click', () => {
+      const isActive = btn.classList.toggle('active');
+      btn.setAttribute('aria-pressed', String(isActive));
+      if (isActive) {
+        localStorage.setItem(storageKey, '1');
+      } else {
+        localStorage.removeItem(storageKey);
+      }
+    });
+  });
+}
+
+/**
+ * Loads and decorates the datacard block.
+ *
+ * Authored block structure (key | value rows):
+ *   image      | <picture> or <img>
+ *   title      | ชื่อสถานที่
+ *   location   | เมือง, ประเทศ
+ *   tags       | tag1, tag2, tag3
+ *   summary    | <p>ข้อความ...</p>
+ *   highlights | <ul><li>...</li></ul>  หรือ item1, item2, item3
+ *
  * @param {Element} block The block element
  */
 export default function decorate(block) {
+  const data = parseRows(block);
+
+  const heroHtml = buildHeroHtml(data.image);
+  const title = data.title?.textContent.trim() || 'สถานที่ท่องเที่ยว';
+  const location = data.location?.textContent.trim() || '';
+  const tagsHtml = buildTagsHtml(data.tags);
+  const summaryHtml = data.summary?.innerHTML.trim() || '';
+  const highlightsHtml = buildHighlightsHtml(data.highlights);
+  const placeId = toSlug(title);
+
   block.innerHTML = `
     <div class="place-card">
       <div class="place-img-container">
-        <div class="place-img"></div>
+        ${heroHtml}
         <div class="place-overlay"></div>
       </div>
       <div class="place-content">
 
         <div class="title-row">
-          <h1 class="place-title">Railay Beach</h1>
+          <h1 class="place-title">${title}</h1>
         </div>
 
+        ${location ? `
         <div class="location">
-          <svg class="location-icon" viewBox="0 0 24 24" aria-hidden="true">
-            <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
-          </svg>
-          <span>กระบี่, ประเทศไทย</span>
-        </div>
+          <svg class="location-icon" viewBox="0 0 24 24" aria-hidden="true">${PIN_ICON}</svg>
+          <span>${location}</span>
+        </div>` : ''}
 
-        <div class="genres">
-          <span class="genre-tag">ชายหาด</span>
-          <span class="genre-tag">ผจญภัย</span>
-          <span class="genre-tag">ธรรมชาติ</span>
-        </div>
+        ${tagsHtml ? `<div class="genres">${tagsHtml}</div>` : ''}
 
+        ${summaryHtml ? `
         <div class="description-section">
           <h5 class="section-title">SUMMARY</h5>
-          <p class="place-description">
-            อ่าวไร่เลย์เป็นคาบสมุทรที่ถูกล้อมรอบด้วยหน้าผาหินปูนสูงชันและทะเลสีฟ้าใสจนไม่สามารถเดินทางถึงได้ทางบก เสน่ห์ของที่นี่อยู่ที่ความบริสุทธิ์ของธรรมชาติ หาดทรายขาวนุ่ม และบรรยากาศที่แตกต่างจากที่ไหนในโลก
-          </p>
-        </div>
+          <div class="place-description">${summaryHtml}</div>
+        </div>` : ''}
 
+        ${highlightsHtml ? `
         <div class="highlights-section">
           <h5 class="section-title">HIGHLIGHTS</h5>
-          <ul class="highlights-list">
-            <li>หน้าผาหินปูนสูงชัน เหมาะสำหรับปีนผา</li>
-            <li>เดินทางได้ทางเรือเท่านั้น</li>
-            <li>ถ้ำพระนาง สถานที่ศักดิ์สิทธิ์ริมชายหาด</li>
-            <li>พระอาทิตย์ตกดินที่สวยงามระดับโลก</li>
-          </ul>
-        </div>
+          <ul class="highlights-list">${highlightsHtml}</ul>
+        </div>` : ''}
 
         <div class="action-row">
           <button class="action-btn love-btn" type="button" data-action="love" aria-pressed="false">
@@ -70,26 +180,5 @@ export default function decorate(block) {
     </div>
   `;
 
-  const placeId = block.closest('[data-place-id]')?.dataset.placeId
-    || window.location.pathname.replace(/\//g, '-').replace(/^-/, '') || 'place';
-
-  block.querySelectorAll('.action-btn[data-action]').forEach((btn) => {
-    const { action } = btn.dataset;
-    const storageKey = `datacard-${placeId}-${action}`;
-
-    if (localStorage.getItem(storageKey) === '1') {
-      btn.classList.add('active');
-      btn.setAttribute('aria-pressed', 'true');
-    }
-
-    btn.addEventListener('click', () => {
-      const isActive = btn.classList.toggle('active');
-      btn.setAttribute('aria-pressed', String(isActive));
-      if (isActive) {
-        localStorage.setItem(storageKey, '1');
-      } else {
-        localStorage.removeItem(storageKey);
-      }
-    });
-  });
+  attachActionButtons(block, placeId);
 }
