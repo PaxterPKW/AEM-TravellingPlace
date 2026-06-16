@@ -19,7 +19,8 @@ function toSlug(str) {
  */
 async function fetchCards(source) {
   try {
-    const resp = await fetch(`${source}.json`);
+    const url = source.endsWith('.json') ? source : `${source}.json`;
+    const resp = await fetch(url);
     if (!resp.ok) return [];
     const json = await resp.json();
     return json.data || [];
