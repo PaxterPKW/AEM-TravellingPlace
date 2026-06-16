@@ -420,4 +420,12 @@
 .datacard-bg.datacard-bg-active {
   opacity: 1;
 }
+
+.datacard-bg::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 30%, rgb(0 0 0 / 80%) 100%);
+  pointer-events: none;
+}
 /* stylelint-enable selector-class-pattern */

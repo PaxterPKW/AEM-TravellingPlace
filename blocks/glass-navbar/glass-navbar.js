@@ -11,49 +11,17 @@ function clearDatacardState() {
     .forEach((key) => localStorage.removeItem(key));
 }
 
-function getPath(href) {
-  try {
-    return new URL(href, window.location.origin).pathname;
-  } catch {
-    return href;
-  }
-}
-
-function moveIndicator(indicator, item) {
-  const el = indicator;
-  el.style.width = `${item.offsetWidth}px`;
-  el.style.left = `${item.offsetLeft}px`;
-}
-
-function buildItems(links) {
-  const currentPath = window.location.pathname;
-  return links.map((link) => {
-    const active = getPath(link.href) === currentPath ? ' active' : '';
-    return `<a class="gn-item${active}" href="${link.href}">${link.text}</a>`;
-  }).join('');
-}
-
-function buildMobileLinks(links) {
-  const currentPath = window.location.pathname;
-  return links.map((link) => {
-    const active = getPath(link.href) === currentPath ? ' active' : '';
-    return `<a class="gn-mobile-link${active}" href="${link.href}">${link.text}</a>`;
-  }).join('');
-}
-
 /**
  * Loads and decorates the glass-navbar block.
+ *
+ * Compact dark pill bar with hamburger menu and state-reset button.
+ * Hamburger opens a full-screen drawer with large nav links.
  *
  * Authored block structure (in Google Doc / Word):
  *   | Glass Navbar |                          |
  *   | [การ์ดสถานที่](/)                       |
  *   | [สถานที่เคยไปมาแล้ว](/visited)          |
  *   | [สถานที่ชอบ](/loved)                    |
- *
- * Each row contains one anchor tag = one nav item.
- * Left  : state-reset button
- * Center: nav menu with sliding glass indicator
- * Right : logo placeholder (reserved)
  *
  * @param {Element} block
  */
@@ -63,56 +31,43 @@ export default function decorate(block) {
     href: a.getAttribute('href') || '#',
   }));
 
+  const currentPath = window.location.pathname;
+  const drawerLinksHtml = links.map((link) => {
+    let path;
+    try { path = new URL(link.href, window.location.origin).pathname; } catch { path = link.href; }
+    const active = path === currentPath ? ' active' : '';
+    return `<a class="gn-drawer-link${active}" href="${link.href}">${link.text}</a>`;
+  }).join('');
+
   block.innerHTML = `
-    <nav class="gn-nav">
-      <button class="gn-reset-btn" type="button" aria-label="รีเซ็ตการ์ดทั้งหมด">
-        <svg viewBox="0 0 24 24" aria-hidden="true">
-          <path d="${RESET_PATH}"/>
+    <div class="gn-bar">
+      <button class="gn-toggle" type="button" aria-expanded="false" aria-label="เปิดเมนู">
+        <svg class="gn-icon gn-icon-ham" viewBox="0 0 24 24" aria-hidden="true"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="3" y1="6" x2="21" y2="6"/>
+          <line x1="3" y1="12" x2="21" y2="12"/>
+          <line x1="3" y1="18" x2="21" y2="18"/>
         </svg>
+        <svg class="gn-icon gn-icon-x" viewBox="0 0 24 24" aria-hidden="true"
+          fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <line x1="6" y1="6" x2="18" y2="18"/>
+          <line x1="18" y1="6" x2="6" y2="18"/>
+        </svg>
+        <span class="gn-toggle-label">Menu</span>
+      </button>
+
+      <button class="gn-reset-btn" type="button" aria-label="รีเซ็ตการ์ดทั้งหมด">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="${RESET_PATH}"/></svg>
         <span>รีเซ็ต</span>
       </button>
+    </div>
 
-      <div class="gn-menu">
-        <div class="gn-indicator" aria-hidden="true"></div>
-        ${buildItems(links)}
-      </div>
+    <nav class="gn-drawer" aria-hidden="true" aria-label="Navigation menu">
+      <p class="gn-drawer-label">เมนู</p>
+      ${drawerLinksHtml}
+    </nav>`;
 
-      <div class="gn-logo" aria-hidden="true"></div>
-
-      <button class="gn-mobile-btn" type="button"
-        aria-label="เปิดเมนู" aria-expanded="false">
-        <span></span><span></span><span></span>
-      </button>
-    </nav>
-
-    <div class="gn-mobile-menu" aria-hidden="true">
-      ${buildMobileLinks(links)}
-    </div>`;
-
-  /* ── Sliding indicator ── */
-  const indicator = block.querySelector('.gn-indicator');
-  const items = [...block.querySelectorAll('.gn-item')];
-  const menu = block.querySelector('.gn-menu');
-  const activeItem = block.querySelector('.gn-item.active') || items[0];
-
-  if (activeItem) {
-    requestAnimationFrame(() => moveIndicator(indicator, activeItem));
-  }
-
-  items.forEach((item) => {
-    item.addEventListener('mouseenter', () => moveIndicator(indicator, item));
-    item.addEventListener('click', () => {
-      items.forEach((i) => i.classList.remove('active'));
-      item.classList.add('active');
-    });
-  });
-
-  menu.addEventListener('mouseleave', () => {
-    const current = block.querySelector('.gn-item.active') || items[0];
-    if (current) moveIndicator(indicator, current);
-  });
-
-  /* ── Reset button ── */
+  /* ── Reset ── */
   const resetBtn = block.querySelector('.gn-reset-btn');
   resetBtn.addEventListener('click', () => {
     clearDatacardState();
@@ -121,21 +76,41 @@ export default function decorate(block) {
     setTimeout(() => window.location.reload(), 800);
   });
 
-  /* ── Mobile hamburger ── */
-  const mobileBtn = block.querySelector('.gn-mobile-btn');
-  const mobileMenu = block.querySelector('.gn-mobile-menu');
+  /* ── Drawer open / close ── */
+  const toggle = block.querySelector('.gn-toggle');
+  const toggleLabel = toggle.querySelector('.gn-toggle-label');
+  const drawer = block.querySelector('.gn-drawer');
 
-  const toggleMobile = (force) => {
-    const open = typeof force === 'boolean' ? force : !mobileMenu.classList.contains('active');
-    mobileBtn.classList.toggle('active', open);
-    mobileBtn.setAttribute('aria-expanded', String(open));
-    mobileMenu.classList.toggle('active', open);
-    mobileMenu.setAttribute('aria-hidden', String(!open));
+  const openDrawer = () => {
+    block.classList.add('gn-open');
+    drawer.classList.add('active');
+    drawer.setAttribute('aria-hidden', 'false');
+    toggle.setAttribute('aria-expanded', 'true');
+    toggle.setAttribute('aria-label', 'ปิดเมนู');
+    toggleLabel.textContent = 'Close';
+    document.body.style.overflow = 'hidden';
   };
 
-  mobileBtn.addEventListener('click', () => toggleMobile());
+  const closeDrawer = () => {
+    block.classList.remove('gn-open');
+    drawer.classList.remove('active');
+    drawer.setAttribute('aria-hidden', 'true');
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.setAttribute('aria-label', 'เปิดเมนู');
+    toggleLabel.textContent = 'Menu';
+    document.body.style.overflow = '';
+  };
 
-  document.addEventListener('click', (e) => {
-    if (!block.contains(e.target)) toggleMobile(false);
+  toggle.addEventListener('click', () => {
+    if (block.classList.contains('gn-open')) closeDrawer();
+    else openDrawer();
+  });
+
+  drawer.querySelectorAll('.gn-drawer-link').forEach((link) => {
+    link.addEventListener('click', closeDrawer);
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && block.classList.contains('gn-open')) closeDrawer();
   });
 }

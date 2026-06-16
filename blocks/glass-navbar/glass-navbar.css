@@ -1,48 +1,84 @@
-/* ── Wrapper: fixed, centered, full width ── */
+/* ── Wrapper: fixed, centered, creates stacking context ── */
 .glass-navbar {
     position: fixed;
     top: 1.5rem;
     left: 50%;
     transform: translateX(-50%);
-    width: min(1100px, 92vw);
     z-index: 1000;
     font-family: var(--body-font-family, sans-serif);
 }
 
-/* ── Nav bar ── */
-.glass-navbar .gn-nav {
-    height: 72px;
-    display: flex;
+/* ── Compact pill bar (always visible, sits above drawer) ── */
+.glass-navbar .gn-bar {
+    position: relative;
+    z-index: 2;
+    display: inline-flex;
     align-items: center;
-    justify-content: space-between;
-    gap: 12px;
-    padding: 0 18px;
-    border-radius: 28px;
-    background: rgb(255 255 255 / 6%);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgb(0 0 0 / 40%);
-    box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 20%),
-        0 20px 50px rgb(0 0 0 / 35%);
+    gap: 4px;
+    padding: 6px;
+    border-radius: 100px;
+    background: rgb(10 10 14 / 88%);
+    backdrop-filter: blur(24px);
+    border: 1px solid rgb(0 0 0 / 50%);
+    box-shadow: 0 8px 32px rgb(0 0 0 / 50%);
+    white-space: nowrap;
 }
 
-/* ── Reset button (left) ── */
+/* ── Toggle button: ≡ Menu / ✕ Close ── */
+.glass-navbar .gn-toggle {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 16px;
+    border-radius: 100px;
+    border: none;
+    background: transparent;
+    color: #fff;
+    font-family: var(--body-font-family, sans-serif);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.2s ease;
+}
+
+.glass-navbar .gn-toggle:hover {
+    background: rgb(255 255 255 / 8%);
+}
+
+/* ── Icon swap via parent class ── */
+.glass-navbar .gn-icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+.glass-navbar .gn-icon-x {
+    display: none;
+}
+
+.glass-navbar.gn-open .gn-icon-ham {
+    display: none;
+}
+
+.glass-navbar.gn-open .gn-icon-x {
+    display: block;
+}
+
+/* ── Reset button ── */
 .glass-navbar .gn-reset-btn {
     display: inline-flex;
     align-items: center;
-    gap: 6px;
+    gap: 8px;
     padding: 8px 14px;
-    border: 1px solid rgb(255 255 255 / 15%);
-    border-radius: 14px;
+    border-radius: 100px;
+    border: 1px solid rgb(255 255 255 / 12%);
     background: rgb(255 255 255 / 8%);
-    backdrop-filter: blur(20px);
     color: #fff;
     font-family: var(--body-font-family, sans-serif);
-    font-size: 0.8rem;
+    font-size: 0.85rem;
     cursor: pointer;
-    transition: background 0.3s ease, transform 0.3s ease;
+    transition: background 0.2s ease, transform 0.2s ease;
     white-space: nowrap;
-    flex-shrink: 0;
 }
 
 .glass-navbar .gn-reset-btn svg {
@@ -54,7 +90,7 @@
 
 .glass-navbar .gn-reset-btn:hover {
     background: rgb(254 65 65 / 30%);
-    transform: translateY(-2px);
+    transform: translateY(-1px);
 }
 
 .glass-navbar .gn-reset-btn:focus-visible {
@@ -67,165 +103,59 @@
     pointer-events: none;
 }
 
-/* ── Center menu ── */
-.glass-navbar .gn-menu {
-    position: relative;
+/* ── Full-screen drawer (below bar in z-index) ── */
+.glass-navbar .gn-drawer {
+    position: fixed;
+    inset: 0;
+    z-index: 1;
     display: flex;
-    gap: 4px;
-    padding: 8px;
-    border-radius: 18px;
-    background: rgb(255 255 255 / 3%);
-    flex: 1;
-    justify-content: center;
-}
-
-/* ── Sliding glass indicator ── */
-.glass-navbar .gn-indicator {
-    position: absolute;
-    top: 8px;
-    left: 8px;
-    height: 44px;
-    border-radius: 12px;
-    background: rgb(255 255 255 / 12%);
-    backdrop-filter: blur(30px);
-    box-shadow:
-        inset 0 1px 0 rgb(255 255 255 / 30%),
-        0 5px 20px rgb(255 255 255 / 5%);
-    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
-    pointer-events: none;
-}
-
-/* ── Nav items ── */
-.glass-navbar .gn-item {
-    position: relative;
-    z-index: 2;
-    height: 44px;
-    padding: 0 16px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 12px;
-    color: rgb(255 255 255 / 55%);
-    text-decoration: none;
-    font-size: 0.85rem;
-    white-space: nowrap;
-    transition: color 0.3s ease, transform 0.3s ease;
-}
-
-.glass-navbar .gn-item:hover {
-    color: #fff;
-    transform: translateY(-2px);
-}
-
-.glass-navbar .gn-item.active {
-    color: #fff;
-}
-
-/* ── Logo placeholder (right) ── */
-.glass-navbar .gn-logo {
-    width: 80px;
-    flex-shrink: 0;
-}
-
-/* ── Mobile hamburger button ── */
-.glass-navbar .gn-mobile-btn {
-    display: none;
     flex-direction: column;
     justify-content: center;
-    gap: 5px;
-    width: 44px;
-    height: 44px;
-    padding: 10px;
-    background: rgb(255 255 255 / 8%);
-    border: 1px solid rgb(255 255 255 / 15%);
-    border-radius: 12px;
-    cursor: pointer;
-    flex-shrink: 0;
-}
-
-.glass-navbar .gn-mobile-btn span {
-    display: block;
-    width: 100%;
-    height: 2px;
-    background: #fff;
-    border-radius: 2px;
-    transition: 0.4s cubic-bezier(0.22, 1, 0.36, 1);
-}
-
-.glass-navbar .gn-mobile-btn.active span:nth-child(1) {
-    transform: rotate(45deg) translate(5px, 5px);
-}
-
-.glass-navbar .gn-mobile-btn.active span:nth-child(2) {
-    opacity: 0;
-}
-
-.glass-navbar .gn-mobile-btn.active span:nth-child(3) {
-    transform: rotate(-45deg) translate(4px, -4px);
-}
-
-/* ── Mobile dropdown menu ── */
-.glass-navbar .gn-mobile-menu {
-    position: absolute;
-    top: calc(100% + 10px);
-    left: 0;
-    right: 0;
-    padding: 12px;
-    border-radius: 24px;
-    background: rgb(255 255 255 / 6%);
-    backdrop-filter: blur(30px);
-    border: 1px solid rgb(0 0 0 / 40%);
-    box-shadow: 0 20px 50px rgb(0 0 0 / 35%);
+    padding: 8rem 3rem 4rem;
+    background: rgb(6 6 10 / 96%);
+    backdrop-filter: blur(12px);
     opacity: 0;
     visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+    transform: translateY(-12px);
+    transition:
+        opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.4s,
+        transform 0.4s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
-.glass-navbar .gn-mobile-menu.active {
+.glass-navbar .gn-drawer.active {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);
 }
 
-.glass-navbar .gn-mobile-link {
-    display: flex;
-    align-items: center;
-    height: 52px;
-    padding: 0 16px;
-    margin-bottom: 4px;
-    color: rgb(255 255 255 / 70%);
+/* ── Section label ── */
+.glass-navbar .gn-drawer-label {
+    font-size: 0.75rem;
+    font-weight: 500;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgb(255 255 255 / 35%);
+    margin: 0 0 1.5rem;
+}
+
+/* ── Large nav links ── */
+.glass-navbar .gn-drawer-link {
+    display: block;
+    font-size: clamp(2rem, 5.5vw, 3.5rem);
+    font-weight: 700;
+    color: rgb(255 255 255 / 80%);
     text-decoration: none;
-    border-radius: 14px;
-    font-size: 0.9rem;
-    transition: background 0.25s ease, color 0.25s ease;
+    line-height: 1.3;
+    padding: 0.3rem 0;
+    transition: color 0.2s ease, transform 0.25s ease;
 }
 
-.glass-navbar .gn-mobile-link:last-child {
-    margin-bottom: 0;
-}
-
-.glass-navbar .gn-mobile-link:hover,
-.glass-navbar .gn-mobile-link.active {
-    background: rgb(255 255 255 / 10%);
+.glass-navbar .gn-drawer-link:hover {
     color: #fff;
+    transform: translateX(10px);
 }
 
-/* ── Responsive ── */
-@media (width < 900px) {
-    .glass-navbar .gn-nav {
-        height: 64px;
-    }
-
-    .glass-navbar .gn-menu {
-        display: none;
-    }
-
-    .glass-navbar .gn-logo {
-        display: none;
-    }
-
-    .glass-navbar .gn-mobile-btn {
-        display: flex;
-    }
+.glass-navbar .gn-drawer-link.active {
+    color: var(--datacard-brand-color, #fe4141);
 }
