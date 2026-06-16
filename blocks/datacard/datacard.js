@@ -4,6 +4,40 @@ const PIN_ICON = '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c
 const SWIPE_THRESHOLD = 80;
 
 /* ─────────────────────────────────────────
+   Page background
+───────────────────────────────────────── */
+
+/**
+ * Crossfades the full-page blurred background to a new image.
+ * Appends/removes `.datacard-bg` elements on <body>.
+ * @param {string|null} imageUrl
+ */
+function updateBackground(imageUrl) {
+  const prev = document.querySelector('.datacard-bg');
+
+  if (!imageUrl) {
+    if (prev) {
+      prev.classList.remove('datacard-bg-active');
+      prev.addEventListener('transitionend', () => prev.remove(), { once: true });
+    }
+    return;
+  }
+
+  const next = document.createElement('div');
+  next.className = 'datacard-bg';
+  next.style.backgroundImage = `url("${imageUrl}")`;
+  document.body.prepend(next);
+
+  requestAnimationFrame(() => {
+    next.classList.add('datacard-bg-active');
+    if (prev) {
+      prev.classList.remove('datacard-bg-active');
+      prev.addEventListener('transitionend', () => prev.remove(), { once: true });
+    }
+  });
+}
+
+/* ─────────────────────────────────────────
    Data fetcher
 ───────────────────────────────────────── */
 
@@ -62,7 +96,7 @@ function buildCardHtml(data) {
   const placeId = toSlug(title);
 
   return `
-    <div class="place-card" data-place-id="${placeId}">
+    <div class="place-card" data-place-id="${placeId}" data-image="${data.image || ''}">
       <div class="choice-overlay" aria-hidden="true">
         <span class="choice-label choice-love-label">LOVE</span>
         <span class="choice-label choice-skip-label">SKIP</span>
@@ -332,8 +366,10 @@ export default async function decorate(block) {
     if (!next) {
       resizeObserver?.disconnect();
       showEmptyState(stack);
+      updateBackground(null);
       return;
     }
+    updateBackground(next.dataset.image);
     syncStackHeight(stack);
     setupResizeObserver();
     initTopCard(next, stack, onDismiss);
@@ -341,6 +377,7 @@ export default async function decorate(block) {
 
   const topCard = stack.querySelector('.place-card');
   if (topCard) {
+    updateBackground(topCard.dataset.image);
     initTopCard(topCard, stack, onDismiss);
     syncStackHeight(stack);
     setupResizeObserver();
