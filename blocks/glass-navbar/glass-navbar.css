@@ -1,9 +1,15 @@
-/* ── Wrapper: fixed, centered, creates stacking context ── */
+/* ── Wrapper: fixed, centered without transform ── */
+
+/* Note: avoid transform here — it would make position:fixed children  */
+
+/* use this element as their containing block instead of the viewport. */
 .glass-navbar {
     position: fixed;
     top: 1.5rem;
-    left: 50%;
-    transform: translateX(-50%);
+    left: 0;
+    right: 0;
+    width: fit-content;
+    margin: 0 auto;
     z-index: 1000;
     font-family: var(--body-font-family, sans-serif);
 }
