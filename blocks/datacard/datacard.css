@@ -41,17 +41,8 @@
   user-select: none;
 }
 
-/* 3rd card — peeks 24px below, even narrower */
-.datacard .datacard-stack .place-card:nth-child(3) {
-  z-index: 1;
-  transform: translateY(24px) scaleX(0.92);
-  opacity: 0.7;
-  pointer-events: none;
-  user-select: none;
-}
-
-/* Hide any cards beyond 3rd */
-.datacard .datacard-stack .place-card:nth-child(n+4) {
+/* Hide 3rd card and beyond — only top 2 cards visible */
+.datacard .datacard-stack .place-card:nth-child(n+3) {
   display: none;
 }
 
