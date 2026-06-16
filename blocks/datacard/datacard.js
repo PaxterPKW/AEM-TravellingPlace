@@ -47,8 +47,7 @@ function buildTagsHtml(tags) {
 
 function buildHighlightsHtml(highlights) {
   if (!highlights) return '';
-  const sep = highlights.includes('\n') ? '\n' : ',';
-  return highlights.split(sep).map((h) => h.trim()).filter(Boolean)
+  return highlights.split(/[,\n]/).map((h) => h.trim()).filter(Boolean)
     .map((h) => `<li>${h}</li>`)
     .join('');
 }
