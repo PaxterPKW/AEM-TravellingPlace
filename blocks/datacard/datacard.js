@@ -1,8 +1,10 @@
+import { readBlockConfig } from '../../scripts/aem.js';
+
 const PIN_ICON = '<path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>';
 const SWIPE_THRESHOLD = 80;
 
 /* ─────────────────────────────────────────
-   Content parsers
+   Data fetcher
 ───────────────────────────────────────── */
 
 function toSlug(str) {
@@ -10,61 +12,52 @@ function toSlug(str) {
 }
 
 /**
- * Splits authored block rows into card data objects.
- * Rows with first column "---" (or both columns empty) mark card boundaries.
- * @param {Element} block
- * @returns {Array.<Object.<string, Element>>}
+ * Fetches card data from an AEM spreadsheet JSON endpoint.
+ * Expects the standard AEM query-index shape: { data: [ {...}, ... ] }
+ * @param {string} source  Path without .json extension, e.g. "/places"
+ * @returns {Promise<Array.<Object.<string, string>>>}
  */
-function parseAllCards(block) {
-  const cards = [];
-  let current = {};
-
-  [...block.children].forEach((row) => {
-    const [keyCol, valCol] = [...row.children];
-    const key = keyCol?.textContent.trim().toLowerCase() || '';
-
-    if (key === '---' || (!key && !valCol?.textContent.trim())) {
-      if (Object.keys(current).length) { cards.push(current); current = {}; }
-      return;
-    }
-    if (key && valCol) current[key] = valCol;
-  });
-
-  if (Object.keys(current).length) cards.push(current);
-  return cards;
+async function fetchCards(source) {
+  try {
+    const resp = await fetch(`${source}.json`);
+    if (!resp.ok) return [];
+    const json = await resp.json();
+    return json.data || [];
+  } catch {
+    return [];
+  }
 }
 
-function buildHeroHtml(col) {
-  const fallback = '<img src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800" alt="" loading="lazy" />';
-  if (!col) return fallback;
-  const pic = col.querySelector('picture');
-  if (pic) return pic.outerHTML;
-  const img = col.querySelector('img');
-  return img ? img.outerHTML : fallback;
+/* ─────────────────────────────────────────
+   Content builders  (plain strings → HTML)
+───────────────────────────────────────── */
+
+function buildHeroHtml(imageUrl) {
+  const src = imageUrl || 'https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=800';
+  return `<img src="${src}" alt="" loading="lazy" />`;
 }
 
-function buildTagsHtml(col) {
-  if (!col) return '';
-  return col.textContent.split(',').map((t) => t.trim()).filter(Boolean)
+function buildTagsHtml(tags) {
+  if (!tags) return '';
+  return tags.split(',').map((t) => t.trim()).filter(Boolean)
     .map((t) => `<span class="genre-tag">${t}</span>`)
     .join('');
 }
 
-function buildHighlightsHtml(col) {
-  if (!col) return '';
-  const items = [...col.querySelectorAll('li, p')].map((el) => el.textContent.trim()).filter(Boolean);
-  const list = items.length
-    ? items
-    : col.textContent.split(',').map((h) => h.trim()).filter(Boolean);
-  return list.map((h) => `<li>${h}</li>`).join('');
+function buildHighlightsHtml(highlights) {
+  if (!highlights) return '';
+  const sep = highlights.includes('\n') ? '\n' : ',';
+  return highlights.split(sep).map((h) => h.trim()).filter(Boolean)
+    .map((h) => `<li>${h}</li>`)
+    .join('');
 }
 
 function buildCardHtml(data) {
   const heroHtml = buildHeroHtml(data.image);
-  const title = data.title?.textContent.trim() || 'สถานที่ท่องเที่ยว';
-  const location = data.location?.textContent.trim() || '';
+  const title = data.title || 'สถานที่ท่องเที่ยว';
+  const location = data.location || '';
   const tagsHtml = buildTagsHtml(data.tags);
-  const summaryHtml = data.summary?.innerHTML.trim() || '';
+  const summaryHtml = data.summary ? `<p>${data.summary}</p>` : '';
   const highlightsHtml = buildHighlightsHtml(data.highlights);
   const placeId = toSlug(title);
 
@@ -253,7 +246,6 @@ function attachDrag(card, stack, onDismiss) {
 function initTopCard(card, stack, onDismiss) {
   const placeId = card.dataset.placeId || 'place';
 
-  /* Visited — save + fly up */
   const visitedBtn = card.querySelector('.visited-btn');
   if (visitedBtn) {
     const key = `datacard-${placeId}-visited`;
@@ -269,7 +261,6 @@ function initTopCard(card, stack, onDismiss) {
     });
   }
 
-  /* Love — save + fly right */
   const loveBtn = card.querySelector('.love-btn');
   if (loveBtn) {
     const key = `datacard-${placeId}-love`;
@@ -281,7 +272,6 @@ function initTopCard(card, stack, onDismiss) {
     });
   }
 
-  /* Swipe — fly left */
   const swipeBtn = card.querySelector('.swipe-btn');
   if (swipeBtn) {
     swipeBtn.addEventListener('click', () => {
@@ -300,22 +290,32 @@ function initTopCard(card, stack, onDismiss) {
 /**
  * Loads and decorates the datacard block.
  *
- * Authored block structure (key | value rows, "---" separates cards):
- *   image      | <picture>
- *   title      | ชื่อสถานที่
- *   location   | เมือง, ประเทศ
- *   tags       | tag1, tag2, tag3
- *   summary    | <p>...</p>
- *   highlights | <ul><li>...</li></ul>
- *   ---        | ← starts next card
+ * Authored block structure (in Google Doc / Word):
+ *   | Datacard |          |
+ *   | source   | /places  |
+ *
+ * The "source" value is the path to an AEM spreadsheet (without .json).
+ * AEM publishes the sheet as JSON at that path, e.g. /places.json,
+ * with shape: { "total": N, "data": [ { image, title, location, tags, summary, highlights } ] }
+ *
+ * For local development, create /places.json in the project root as a mock.
  *
  * @param {Element} block
  */
-export default function decorate(block) {
-  const allCards = parseAllCards(block);
+export default async function decorate(block) {
+  const cfg = readBlockConfig(block);
+  const source = cfg.source || '/places';
+
+  const allCards = await fetchCards(source);
   block.innerHTML = `<div class="datacard-stack">${allCards.map(buildCardHtml).join('')}</div>`;
 
   const stack = block.querySelector('.datacard-stack');
+
+  if (!allCards.length) {
+    showEmptyState(stack);
+    return;
+  }
+
   let resizeObserver = null;
 
   function setupResizeObserver() {
