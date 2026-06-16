@@ -163,5 +163,5 @@
 }
 
 .glass-navbar .gn-drawer-link.active {
-    color: var(--datacard-brand-color, #fe4141);
+    color: var(--datacard-brand-color, #fff);
 }
