@@ -195,6 +195,7 @@ function attachDrag(card, stack, onDismiss) {
 
   card.addEventListener('pointerdown', (e) => {
     if (e.pointerType === 'mouse' && e.button !== 0) return;
+    if (e.target.closest('button')) return;
     startX = e.clientX;
     startY = e.clientY;
     isDragging = true;
