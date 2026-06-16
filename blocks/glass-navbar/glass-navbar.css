@@ -162,8 +162,8 @@
     transform: translateX(10px);
 }
 
-.glass-navbar .gn-drawer-link.active {
+/* .glass-navbar .gn-drawer-link.active {
     text-decoration: underline;
     text-underline-offset: 6px;
     text-decoration-thickness: 2px;
-}
+} */
