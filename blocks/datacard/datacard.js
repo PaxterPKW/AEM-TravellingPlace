@@ -366,7 +366,6 @@ export default async function decorate(block) {
     if (!next) {
       resizeObserver?.disconnect();
       showEmptyState(stack);
-      updateBackground(null);
       return;
     }
     updateBackground(next.dataset.image);
